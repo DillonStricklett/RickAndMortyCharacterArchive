@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -17,23 +18,25 @@ namespace RickAndMortyAPICore
         /// Retrieve characters by name.
         /// </summary>
         /// <exception cref="HttpRequestException"></exception>
-        /// <param name="name"></param>
+        /// <param name="name">User searched name.</param>
+        /// <exception cref="ArgumentException">Thrown when character is not found.</exception>
         /// <returns></returns>
         public async Task<Character> GetCharactersByName(string name)
         {
-            try
+            string url = $"https://rickandmortyapi.com/api/character/?name={name}";
+            HttpResponseMessage response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
             {
-                string url = $"https://rickandmortyapi.com/api/character/?name={name}";
-                HttpResponseMessage response = await client.GetAsync(url);
-                response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<Character>(responseBody);
             }
-            catch (HttpRequestException ex)
+            else if(response.StatusCode == HttpStatusCode.NotFound)
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
-                throw ex;
+                throw new ArgumentException($"{name} does not exist.");
+            }
+            else
+            {
+                throw new HttpRequestException();
             }
         }
 
