@@ -1,8 +1,31 @@
-﻿@{
+﻿@model RickAndMortyAPICore.Result
+@{
     ViewData["Title"] = "Home Page";
+    RickAndMortyAPICore.Result result = ViewData["result"] as RickAndMortyAPICore.Result;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h1>Welcome!</h1>
+<p>This page will show you the format of how a character will be displayed,
+    to load a new character just refresh the page.</p>
+
+<div class="row align-content-center">
+    <div class="card mx-auto" style="width:250px; height:75px; ">
+        <img class="card-img-top" src="@result.image" alt="A picture of @result.name"/>
+        <div class="card-header">
+            <p class="card-title">@result.name</p>
+        </div>
+        <div class="card-body">
+            <p class="card-text">
+                Status: @result.status <br />
+                Species: @result.species <br />
+                Gender: @result.gender<br />
+                @result.name was last seen on @result.location.name<br />
+            </p>
+            @if (result.type.Length != 0)
+            {
+                <p class="card-text"> Type:  @result.type</p>
+            }
+        </div>
+    </div>
 </div>
+
