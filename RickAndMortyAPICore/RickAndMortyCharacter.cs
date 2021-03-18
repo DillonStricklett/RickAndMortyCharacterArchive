@@ -12,7 +12,40 @@ namespace RickAndMortyAPICore
     /// class and then click edit and click paste special
     /// to paste the JSON data into classes.
     /// or go to https://json2csharp.com/ for conversion.
-    public class Character
+
+    public class CharacterSearchResults
+    {
+        /// <summary>
+        /// Info on amount of characters returned.
+        /// </summary>
+        public Info info { get; set; }
+        /// <summary>
+        /// Array of characters that match search criteria.
+        /// </summary>
+        public Result[] results { get; set; }
+    }
+
+    public class Info
+    {
+        /// <summary>
+        /// The number of returned characters.
+        /// </summary>
+        public int count { get; set; }
+        /// <summary>
+        /// THe number of pages of characters that are returned.
+        /// </summary>
+        public int pages { get; set; }
+        /// <summary>
+        /// The next page.
+        /// </summary>
+        public string next { get; set; }
+        /// <summary>
+        /// The previous page, will be null if on first page.
+        /// </summary>
+        public object prev { get; set; }
+    }
+
+    public class Result // Character
     {
         /// <summary>
         /// The character id.
