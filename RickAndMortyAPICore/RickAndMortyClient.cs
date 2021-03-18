@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -15,23 +16,29 @@ namespace RickAndMortyAPICore
         static readonly HttpClient client = new HttpClient();
 
         /// <summary>
-        /// Retrieve characters by name.
-        /// </summary>
-        /// <param name="name">User searched name.</param>
-        /// <returns></returns>
-        public async Task<Character> GetCharactersByName(string name)
-        {
-            return await GetCharactersByNameOrId(name);
-        }
-
-        /// <summary>
         /// Gets a character by their id
         /// </summary>
         /// <param name="id">User searched id</param>
         /// <returns></returns>
-        public async Task<Character> GetCharacterById(int id)
+        public async Task<Result> GetCharacterById(int id)
         {
-            return await GetCharactersByNameOrId(id.ToString());
+            Result searchResults = new Result();
+            string url = $"https://rickandmortyapi.com/api/character/{id}";
+            HttpResponseMessage response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                string responseBody = await response.Content.ReadAsStringAsync();
+                searchResults = JsonConvert.DeserializeObject<Result>(responseBody);
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                throw new ArgumentException($"{id} does not exist.");
+            }
+            else
+            {
+                throw new HttpRequestException();
+            }
+            return searchResults;
         }
 
         /// <summary>
@@ -41,45 +48,22 @@ namespace RickAndMortyAPICore
         /// <param name="name">User searched name.</param>
         /// <exception cref="ArgumentException">Thrown when character is not found.</exception>
         /// <returns></returns>
-        private static async Task<Character> GetCharactersByNameOrId(string name)
+        public static async Task<CharacterSearchResults> GetCharactersByName(string name)
         {
-            int id;
-            bool isNum = int.TryParse(name, out id);
-            if (isNum)
+            string url = $"https://rickandmortyapi.com/api/character/?name={name}";
+            HttpResponseMessage response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
             {
-                string url = $"https://rickandmortyapi.com/api/character/{id}";
-                HttpResponseMessage response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<Character>(responseBody);
-                }
-                else if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                    throw new ArgumentException($"{id} does not exist.");
-                }
-                else
-                {
-                    throw new HttpRequestException();
-                }
+                string responseBody = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<CharacterSearchResults>(responseBody);
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                throw new ArgumentException($"{name} does not exist.");
             }
             else
             {
-                string url = $"https://rickandmortyapi.com/api/character/?name={name}";
-                HttpResponseMessage response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<Character>(responseBody);
-                }
-                else if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                    throw new ArgumentException($"{name} does not exist.");
-                }
-                else
-                {
-                    throw new HttpRequestException();
-                }
+                throw new HttpRequestException();
             }
         }
     }
