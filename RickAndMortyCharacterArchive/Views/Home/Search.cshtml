@@ -1,0 +1,45 @@
+﻿@model RickAndMortyAPICore.Result
+@{ 
+    ViewData["Title"] = "Search Characters";
+}
+<h1>Search Character</h1>
+<p>This page will return a list of characters based off your search.</p>
+
+<form method="post" style="margin-bottom: 50px;">
+    <label asp-for="name"></label>
+    <input type="text" name="userInput" placeholder="Ex: Birdperson" />
+    <button class="btn btn-dark" style="bottom:20px;" type="submit" value="Search">Search</button>
+</form>
+
+@{
+    RickAndMortyAPICore.Result[] resultList = ViewData["resultList"] as RickAndMortyAPICore.Result[];
+}
+
+@if (ViewData["search"] != null)
+{
+    <form method="post" style="overflow:scroll; width: inherit; height:500px;">
+        <div class="row align-self-auto">
+            @foreach (var result in resultList)
+            {
+                <div class="card mx-auto" style="width: 250px; height:75px; padding-bottom:500px; padding-right:25px;">
+                    <img class="card-img-top" src="@result.image" alt="Picture of @result.name">
+                    <div class="card-header">
+                        <p class="card-title">@result.name</p>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Status: @result.status <br />
+                            Species: @result.species <br />
+                            Gender: @result.gender<br />
+                            @result.name was last seen on @result.location.name<br />
+                        </p>
+                        @if (result.type.Length != 0)
+                        {
+                            <p class="card-text"> Type:  @result.type</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </form>
+}
