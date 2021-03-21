@@ -14,3 +14,6 @@ RickAndMorty NuGet package by:
 1. Open your package manager console.
 2. Enter "Install-Package RickAndMorty.Net.Api" in the console.
 3. You can refer to the [Readme](https://github.com/Carlj28/RickAndMorty.Net.Api) of the .net Api repo for instructions on usage.
+
+### Information on API
+The documentation for this API can be found at this [site](https://rickandmortyapi.com/).
